@@ -17,14 +17,28 @@ BEGIN
 END;
 $$;
 
--- Leer usuario especifico
-CREATE OR REPLACE PROCEDURE sp_leer_usuario_especifico(id_usuario INT)
+-- Leer usuario especifico por ID
+CREATE OR REPLACE PROCEDURE sp_leer_usuario_especifico(nombre_usuario VARCHAR)
+RETURNS text AS $$
+
+LANGUAGE plpgsql
+
+AS $$
+BEGIN
+    RETURN(SELECT * FROM Usuario WHERE ID_Usuario = id_usuario);
+END;
+$$;
+
+
+-- Leer usuario especifico por Username
+CREATE OR REPLACE PROCEDURE sp_leer_usuario_especifico_por_username(id_usuario INT)
 LANGUAGE plpgsql
 AS $$
 BEGIN
     SELECT * FROM Usuario WHERE ID_Usuario = id_usuario;
 END;
 $$;
+
 
 -- Actualizar Usuario
 CREATE OR REPLACE PROCEDURE sp_actualizar_usuario(id_usuario INT, nombre_usuario VARCHAR, hash_contrasena TEXT, rol_usuario VARCHAR)

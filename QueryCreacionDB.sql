@@ -6,8 +6,7 @@
 
 -- Creación de las tablas
 CREATE TABLE Usuario (
-    ID_Usuario SERIAL PRIMARY KEY,
-    NombreUsuario VARCHAR(255) UNIQUE NOT NULL,
+    NombreUsuario VARCHAR(255) UNIQUE PRIMARY KEY NOT NULL,
     HashContraseña TEXT NOT NULL,
     Rol VARCHAR(50) NOT NULL CHECK (Rol IN ('mesero', 'administrador', 'chef', 'barista'))
 );
@@ -32,11 +31,13 @@ CREATE TABLE Mesa (
 CREATE TABLE Cuenta (
     ID_Cuenta SERIAL PRIMARY KEY,
     ID_Mesa INTEGER NOT NULL,
-    FechaHoraApertura TIMESTAMP NOT NULL,
+    FechaHoraApertura TIMESTAMP NOT NULL DEFAULT NOW(),
     FechaHoraCierre TIMESTAMP,
     Estado VARCHAR(50) CHECK (Estado IN ('abierta', 'cerrada')),
     FOREIGN KEY (ID_Mesa) REFERENCES Mesa(ID_Mesa)
 );
+
+delete from cuenta;
 
 -- Pedido
 CREATE TABLE Pedido (
@@ -46,12 +47,14 @@ CREATE TABLE Pedido (
     FOREIGN KEY (ID_Cuenta) REFERENCES Cuenta(ID_Cuenta)
 );
 
+
 -- Ítem_Menu
 CREATE TABLE Item_Menu (
     ID_Item SERIAL PRIMARY KEY,
     Nombre VARCHAR(255) NOT NULL,
     Descripcion TEXT,
-    Precio NUMERIC(10,2) NOT NULL
+    Precio NUMERIC(10,2) NOT NULL,
+    Tipo VARCHAR(50) NOT NULL CHECK (Tipo IN ('comida', 'bebida'))
 );
 
 -- Detalle_Pedido
