@@ -1,8 +1,8 @@
 -- Universidad del Valle de Guatemala
 -- Proyecto 2 (Gestion de Restaurante)
 -- Gabriel Paz 221087
--- Joaquin Puente
--- Nelson Garcia
+-- Joaquin Puente 22296
+-- Nelson Garcia 22434
 
 -- Creación de las tablas
 CREATE TABLE Usuario (
@@ -24,6 +24,7 @@ CREATE TABLE Mesa (
     ID_Area INTEGER NOT NULL,
     Capacidad INTEGER NOT NULL,
     EsMóvil BOOLEAN NOT NULL,
+    Disponible BOOLEAN NOT NULL,
     FOREIGN KEY (ID_Area) REFERENCES Area(ID_Area)
 );
 
@@ -62,6 +63,7 @@ CREATE TABLE Detalle_Pedido (
     ID_Pedido INTEGER NOT NULL,
     ID_Item INTEGER NOT NULL,
     Cantidad INTEGER NOT NULL,
+    Estado VARCHAR(50) NOT NULL CHECK (Estado IN ('pendiente','preparando', 'entregado')),
     FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido),
     FOREIGN KEY (ID_Item) REFERENCES Item_Menu(ID_Item),
     PRIMARY KEY (ID_Pedido, ID_Item)
@@ -105,7 +107,7 @@ CREATE TABLE Queja (
     ID_Queja SERIAL PRIMARY KEY,
     ID_Cliente VARCHAR(50) NOT NULL,
     FechaHora TIMESTAMP NOT NULL,
-    Motivo TEXT,
+    Motivo TEXT NOT NULL,
     Severidad INTEGER CHECK (Severidad >= 1 AND Severidad <= 5),
     ID_Mesero INTEGER,
     ID_Item INTEGER,
