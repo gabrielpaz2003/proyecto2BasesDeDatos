@@ -38,8 +38,6 @@ CREATE TABLE Cuenta (
     FOREIGN KEY (ID_Mesa) REFERENCES Mesa(ID_Mesa)
 );
 
-delete from cuenta;
-
 -- Pedido
 CREATE TABLE Pedido (
     ID_Pedido SERIAL PRIMARY KEY,
@@ -47,7 +45,6 @@ CREATE TABLE Pedido (
     FechaHora TIMESTAMP NOT NULL,
     FOREIGN KEY (ID_Cuenta) REFERENCES Cuenta(ID_Cuenta)
 );
-
 
 -- Ítem_Menu
 CREATE TABLE Item_Menu (
