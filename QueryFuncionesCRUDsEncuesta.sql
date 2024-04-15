@@ -9,7 +9,6 @@ BEGIN
     VALUES (cuenta_id_encuesta, amabilidad_encuesta, exactitud_encuesta)
     RETURNING * INTO v_record;
     RETURN NEXT v_record;
-    RETURN;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -41,7 +40,6 @@ BEGIN
     WHERE ID_Encuesta = encuesta_id
     RETURNING * INTO v_record;
     RETURN NEXT v_record;
-    RETURN;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -55,7 +53,6 @@ BEGIN
     DELETE FROM Encuesta WHERE ID_Encuesta = encuesta_id
     RETURNING * INTO v_record;
     RETURN NEXT v_record;
-    RETURN;
 END;
 $$ LANGUAGE plpgsql;
 
