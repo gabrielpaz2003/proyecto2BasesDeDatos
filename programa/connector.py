@@ -33,3 +33,19 @@ def callFunc(funcName: str, *args) -> list[tuple]:
     finally:
         if (connector):
             connector.close()
+
+def runQuery(query: str) -> list[tuple]:
+    try:
+        connector = __connect()
+        engine = connector.cursor()
+
+        engine.execute(query)
+
+        connector.commit()
+
+        return engine.fetchall()
+    except (Exception, pg.DatabaseError) as error:
+        print("Error: ", error)
+    finally:
+        if (connector):
+            connector.close()

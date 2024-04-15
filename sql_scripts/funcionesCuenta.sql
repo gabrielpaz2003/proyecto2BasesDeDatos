@@ -1,10 +1,10 @@
-CREATE OR REPLACE FUNCTION fn_insertar_cuenta(idmesa INT, estadoA varchar)
+CREATE OR REPLACE FUNCTION fn_insertar_cuenta(idmesa INT, estadoA varchar, _fecha_hora_apertura TIMESTAMP)
 RETURNS SETOF cuenta
 AS $$
 DECLARE
     new_cuenta cuenta%ROWTYPE;
 BEGIN
-    INSERT INTO Cuenta (ID_Mesa, estado) VALUES (idmesa, estadoA)
+    INSERT INTO Cuenta (ID_Mesa, estado, fechahoraapertura) VALUES (idmesa, estadoA, _fecha_hora_apertura)
     RETURNING * INTO new_cuenta;
 
     RETURN NEXT new_cuenta;

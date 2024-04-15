@@ -1,12 +1,12 @@
 -- CRUD DETALLE PEDIDO
 -- fn_insertar_detalle_pedido: Función para insertar un nuevo detalle de pedido y retornar el detalle insertado.
-CREATE OR REPLACE FUNCTION fn_insertar_detalle_pedido(pedido_id INTEGER, item_id INTEGER, cantidad INTEGER, estado VARCHAR)
+CREATE OR REPLACE FUNCTION fn_insertar_detalle_pedido(pedido_id INTEGER, item_id INTEGER, cantidad INTEGER)
 RETURNS SETOF Detalle_Pedido AS $$
 DECLARE
     v_record Detalle_Pedido;
 BEGIN
-    INSERT INTO Detalle_Pedido (ID_Pedido, ID_Item, Cantidad, Estado)
-    VALUES (pedido_id, item_id, cantidad, estado)
+    INSERT INTO Detalle_Pedido (ID_Pedido, ID_Item, Cantidad)
+    VALUES (pedido_id, item_id, cantidad)
     RETURNING * INTO v_record;
     RETURN NEXT v_record;
 END;
@@ -31,13 +31,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- fn_actualizar_detalle_pedido: Función para actualizar un detalle de pedido y retornar el detalle actualizado.
-CREATE OR REPLACE FUNCTION fn_actualizar_detalle_pedido(pedido_id INTEGER, item_id INTEGER, _cantidad INTEGER, _estado VARCHAR)
+CREATE OR REPLACE FUNCTION fn_actualizar_detalle_pedido(pedido_id INTEGER, item_id INTEGER, _cantidad INTEGER)
 RETURNS SETOF Detalle_Pedido AS $$
 DECLARE
     v_record Detalle_Pedido;
 BEGIN
     UPDATE Detalle_Pedido
-    SET Cantidad = _cantidad, Estado = _estado
+    SET Cantidad = _cantidad
     WHERE ID_Pedido = pedido_id AND ID_Item = item_id
     RETURNING * INTO v_record;
     RETURN NEXT v_record;

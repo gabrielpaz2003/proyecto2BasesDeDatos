@@ -43,7 +43,8 @@ CREATE TABLE Pedido (
     ID_Pedido SERIAL PRIMARY KEY,
     ID_Cuenta INTEGER NOT NULL,
     FechaHora TIMESTAMP NOT NULL,
-    FOREIGN KEY (ID_Cuenta) REFERENCES Cuenta(ID_Cuenta)
+    FOREIGN KEY (ID_Cuenta) REFERENCES Cuenta(ID_Cuenta),
+    Estado VARCHAR(50) NOT NULL CHECK (Estado IN ('pendiente','preparando', 'entregado'))
 );
 
 -- Ítem_Menu
@@ -57,11 +58,9 @@ CREATE TABLE Item_Menu (
 
 -- Detalle_Pedido
 CREATE TABLE Detalle_Pedido (
-    ID_Detalle SERIAL PRIMARY KEY,
     ID_Pedido INTEGER NOT NULL,
     ID_Item INTEGER NOT NULL,
     Cantidad INTEGER NOT NULL,
-    Estado VARCHAR(50) NOT NULL CHECK (Estado IN ('pendiente','preparando', 'entregado')),
     FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido),
     FOREIGN KEY (ID_Item) REFERENCES Item_Menu(ID_Item),
     PRIMARY KEY (ID_Pedido, ID_Item)

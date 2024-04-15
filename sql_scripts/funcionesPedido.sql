@@ -1,11 +1,11 @@
 -- fn_insertar_pedido: Función para insertar un nuevo pedido.
-CREATE OR REPLACE FUNCTION fn_insertar_pedido(cuenta_id INTEGER, fecha_hora TIMESTAMP)
+CREATE OR REPLACE FUNCTION fn_insertar_pedido(cuenta_id INTEGER, fecha_hora TIMESTAMP, _estado VARCHAR)
 RETURNS SETOF pedido AS $$
 DECLARE
     pedido_insertado pedido%ROWTYPE;
 BEGIN
-    INSERT INTO Pedido (ID_Cuenta, FechaHora)
-    VALUES (cuenta_id, fecha_hora)
+    INSERT INTO Pedido (ID_Cuenta, FechaHora, Estado)
+    VALUES (cuenta_id, fecha_hora, _estado)
     RETURNING * INTO pedido_insertado;
 
     RETURN NEXT pedido_insertado;
@@ -29,13 +29,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- fn_actualizar_pedido: Función para actualizar un pedido existente.
-CREATE OR REPLACE FUNCTION fn_actualizar_pedido(pedido_id INTEGER, cuenta_id INTEGER, fecha_hora TIMESTAMP)
+CREATE OR REPLACE FUNCTION fn_actualizar_pedido(pedido_id INTEGER, cuenta_id INTEGER, fecha_hora TIMESTAMP, _estado VARCHAR)
 RETURNS SETOF pedido AS $$
 DECLARE
     pedido_actualizado pedido%ROWTYPE;
 BEGIN
     UPDATE Pedido
-    SET ID_Cuenta = cuenta_id, FechaHora = fecha_hora
+    SET ID_Cuenta = cuenta_id, FechaHora = fecha_hora, Estado = _estado
     WHERE ID_Pedido = pedido_id
     RETURNING * INTO pedido_actualizado;
 
