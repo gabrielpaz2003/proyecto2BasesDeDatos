@@ -29,3 +29,4 @@ class Detalle:
         self.id = id
         self.product_id = product_id
         self.quantity = quantity
+

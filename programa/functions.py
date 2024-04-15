@@ -1,6 +1,7 @@
 from connector import callFunc, runQuery
 from entities import *
 from funcionesAuxiliares import *
+from cruds import *
 import tabulate
 import enquiries
 import hashlib
@@ -9,7 +10,6 @@ import hashlib
 def registerUser(username: str, password: str, rol: str) -> None:
     passwordHash = hashlib.sha256(password.encode()).hexdigest()
     callFunc("fn_insertar_usuario", username, passwordHash, rol)
-
 
 def loginUser(username: str, password: str) -> User:
     passwordHash = hashlib.sha256(password.encode()).hexdigest()
@@ -23,7 +23,6 @@ def loginUser(username: str, password: str) -> User:
             return None
     else:
         return None
-
 
 def __detallarPedido(idPedido: int):
     options = ["Agregar Producto", "Consultar Pedido", "Cerrar Pedido"]
@@ -99,6 +98,8 @@ def __cerrarCuenta(cuentaId: int):
     else:
         print("No se pudo cerrar la cuenta")
 
+    __facturarCuenta(cuentaId)
+
 def __consultarPedidosCuenta(id_cuenta):
     result = runQuery(f"""select dp.id_item, im.nombre, dp.cantidad from detalle_pedido dp
         join pedido p on dp.id_pedido = p.id_pedido
@@ -113,9 +114,93 @@ def __consultarPedidosCuenta(id_cuenta):
 
     print(tabulate.tabulate(tabla, headers="firstrow"))
 
+def __facturarCuenta(id_cuenta):
+    result = runQuery(f"""
+    select dp.id_item, im.nombre, dp.cantidad, im.precio*dp.cantidad as subtotal from detalle_pedido dp
+    join pedido p on dp.id_pedido = p.id_pedido
+    join cuenta c on p.id_cuenta = c.id_cuenta
+    join item_menu im on dp.id_item = im.id_item
+    where c.id_cuenta = {id_cuenta};""")
+
+    tabla = [["Id", "Producto", "Cantidad", "Subtotal"]]
+
+    total = 0.00
+
+    for r in result:
+        total += float(r[3])
+        tabla.append([r[0], r[1], r[2], r[3]])
+
+    print(tabulate.tabulate(tabla, headers="firstrow"))
+
+    propina = total*0.15
+
+    print(f"Subtotal: Q{total:.2f}")
+    print(f"Propina Q{propina:.2f}")
+    print(f"Total Q{(total+propina):.2f}")
+
+def __consultarPedido(id_pedido):
+    result = runQuery(f"""
+    select im.nombre, dp.cantidad from detalle_pedido dp
+    join item_menu im on dp.id_item = im.id_item
+    where dp.id_pedido = {id_pedido}
+    """)
+    print("\033c")
+
+    tabla = [["Producto", "Cantidad"]]
+    for r in result:
+        tabla.append([r[0], r[1]])
+
+    print(tabulate.tabulate(tabla, headers="firstrow"))
+
+def __fetchPedidosCocina(tipo):
+    result = runQuery(f"""
+    SELECT p.id_pedido  from detalle_pedido dp
+    join pedido p on dp.id_pedido = p.id_pedido
+    join item_menu im on dp.id_item = im.id_item
+    where p.estado = 'pendiente' and im.tipo = '{tipo}'
+    order by p.fechahora asc;
+    """)    
+    print("\033c")
+
+    pedidos = [r[0] for r in result]
+
+    ver = enquiries.choose('Choose one of these options: ', pedidos)
+
+    __consultarPedido(ver)
+
+def __entregarPedido(tipo):
+    result = runQuery(f"""
+    SELECT p.id_pedido  from detalle_pedido dp
+    join pedido p on dp.id_pedido = p.id_pedido
+    join item_menu im on dp.id_item = im.id_item
+    where p.estado = 'pendiente' and im.tipo = '{tipo}'
+    order by p.fechahora asc;
+    """)    
+    pedidos = [r[0] for r in result]
+    print("\033c")
+
+    ver = enquiries.choose('Choose one of these options: ', pedidos)
+
+    resultado = callFunc("fn_leer_pedido_especifico", ver)
+
+    callFunc("fn_actualizar_pedido", ver, resultado[0][1], resultado[0][2], 'entregado')
+
+def __crearAgrupacion(valores):
+    string = ""
+    for i in valores:
+        string += f"({i}),"
+
+    runQuery(f"INSERT INTO agrupacion_mesas(ID_Mesa) VALUES {string}")
+
+def __eliminarAgrupacion(idAgrupacion):
+    runQuery(f"DELETE FROM agrupacion_mesas WHERE ID_Agrupacion == {idAgrupacion}")
+
+    print("Agrupación eliminada")
+
 def mainMenu(userInstance: User) -> None:
+    print("\033c")
     if userInstance.role == "mesero":
-        opciones = ["Abrir Cuenta", "Tomar Pedido", "Consultar pedidos", "Cerrar Cuenta", "Cerrar sesión"]
+        opciones = ["Abrir Cuenta", "Tomar Pedido", "Consultar pedidos", "Cerrar Cuenta", "Agrupaciones", "Cerrar sesión"]
         print(f"Bienvenido {userInstance.username}")
         while True:
             choice = enquiries.choose('Choose one of these options: ', opciones)
@@ -131,17 +216,65 @@ def mainMenu(userInstance: User) -> None:
             elif choice == "Cerrar Cuenta":
                 cuenta: int = int(input("Cuenta: "))
                 __cerrarCuenta(cuenta)
+            elif choice == "Agrupaciones":
+                options = ["Crear Agrupación", "Eliminar agrupación", "Salir"]
+                choice = enquiries.choose('Elije una opción: ', options)
+                if choice == "Crear Agrupación":
+                    print("Ingrese los números de mesa que desea agregar (Salir = 0)")
+                    valores = []
+                    while True:
+                        valor = input("Mesa: ")
+                        if valor == "0":
+                            break
+                        else:
+                            valores.append(int(valor))
+
+                    __crearAgrupacion(valores)
+                elif choice == "Eliminar agrupación":
+                    __eliminarAgrupacion()
+                elif choice == "Salir":
+                    continue
+
+
             elif choice == "Cerrar sesión":
                 return
             
     elif userInstance.role == "administrador":
         print(f"Bienvenido {userInstance.username}")
+        while True:
+            choice = enquiries.choose('Elije una opción: ', ["Ver reportes", "Ver Quejas", "Ver encuestas", "Modificar datos", "Cerrar sesión"])
+            if choice == "Ver reportes":
+                print("\033c")
+                reportes = ["Plato más pedido", "Horario de más pedidos", "Promedio de tiempo para comer", "Quejas por fecha", "Quejas por fecha por persona", "Eficiencia Meseros"]
+                choice = enquiries.choose('Elije una opción: ', reportes)
+
+            elif choice == "Cerrar sesión":
+                return
 
     elif userInstance.role == "chef":
+        opciones = ["Ver Pedidios", "Entregar Pedido", "Cerrar sesión"]
         print(f"Bienvenido {userInstance.username}")
+        while True:
+            choice = enquiries.choose('Elije una opción: ', opciones)
+            if choice == "Ver Pedidios":
+                __fetchPedidosCocina('comida')
+            elif choice == "Entregar Pedido":
+                __entregarPedido('comida')
+            elif choice == "Cerrar sesión":
+                return
+
 
     elif userInstance.role == "barista":
+        opciones = ["Ver Pedidios", "Entregar Pedido", "Cerrar sesión"]
         print(f"Bienvenido {userInstance.username}")
+        while True:
+            choice = enquiries.choose('Elije una opción: ', opciones)
+            if choice == "Ver Pedidios":
+                __fetchPedidosCocina('bebida')
+            elif choice == "Entregar Pedido":
+                __entregarPedido('bebida')
+            elif choice == "Cerrar sesión":
+                return
 
 
 

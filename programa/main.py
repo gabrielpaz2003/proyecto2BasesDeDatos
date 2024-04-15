@@ -17,8 +17,8 @@ roles: list[str] = ['mesero', 'administrador', 'chef', 'barista']
 if __name__ == "__main__":
     running: bool = True
     #Clear console
-    print("\033c")
     while running:
+        print("\033c")
         choice = enquiries.choose('Choose one of these options: ', loginOptions)
         if choice == "Iniciar sesión":
             username: str = input("Usuario: ")
