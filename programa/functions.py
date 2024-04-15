@@ -248,6 +248,21 @@ def mainMenu(userInstance: User) -> None:
                 reportes = ["Plato más pedido", "Horario de más pedidos", "Promedio de tiempo para comer", "Quejas por fecha", "Quejas por fecha por persona", "Eficiencia Meseros"]
                 choice = enquiries.choose('Elije una opción: ', reportes)
 
+                #TODO: Implementar qué sucede en cada if e imprimir los datos
+
+                if choice == "Plato más pedido":
+                    pass
+                elif choice == "Horario de más pedidos":
+                    pass
+                elif choice == "Promedio de tiempo para comer":
+                    pass
+                elif choice == "Quejas por fecha":
+                    pass
+                elif choice == "Quejas por fecha por persona":
+                    pass
+                elif choice == "Eficiencia Meseros":
+                    pass
+
             elif choice == "Cerrar sesión":
                 return
 
