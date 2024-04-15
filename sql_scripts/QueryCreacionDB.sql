@@ -4,6 +4,7 @@
 -- Joaquin Puente 22296
 -- Nelson Garcia 22434
 
+-- TABLAS
 -- Creación de las tablas
 CREATE TABLE Usuario (
     NombreUsuario VARCHAR(255) UNIQUE PRIMARY KEY NOT NULL,
@@ -26,6 +27,13 @@ CREATE TABLE Mesa (
     EsMóvil BOOLEAN NOT NULL,
     Disponible BOOLEAN NOT NULL,
     FOREIGN KEY (ID_Area) REFERENCES Area(ID_Area)
+);
+
+-- Agrupación de Mesas
+CREATE TABLE Agrupacion_Mesas (
+    ID_Agrupacion SERIAL PRIMARY KEY,
+    ID_Mesa INTEGER NOT NULL,
+    FOREIGN KEY (ID_Mesa) REFERENCES Mesa(ID_Mesa)
 );
 
 -- Cuenta
@@ -112,3 +120,97 @@ CREATE TABLE Queja (
     FOREIGN KEY (ID_Mesero) REFERENCES Mesero(ID_Mesero),
     FOREIGN KEY (ID_Item) REFERENCES Item_Menu(ID_Item)
 );
+
+-- INDICES
+
+-- Creación de índices
+CREATE INDEX idx_area ON Mesa(ID_Area);
+CREATE INDEX idx_cuenta ON Pedido(ID_Cuenta);
+CREATE INDEX idx_mesa ON Cuenta(ID_Mesa);
+CREATE INDEX idx_pedido ON Detalle_Pedido(ID_Pedido);
+CREATE INDEX idx_item ON Detalle_Pedido(ID_Item);
+CREATE INDEX idx_pago_cuenta ON Pago(ID_Cuenta);
+CREATE INDEX idx_mesero_area ON Mesero(ID_Area);
+CREATE INDEX idx_queja_cliente ON Queja(ID_Cliente);
+CREATE INDEX idx_queja_mesero ON Queja(ID_Mesero);
+CREATE INDEX idx_queja_item ON Queja(ID_Item);
+
+
+-- TRIGGERS
+
+-- Trigger para actualizar el estado de la mesa
+-- Función para establecer la mesa(s) como no disponible
+CREATE OR REPLACE FUNCTION fn_mesas_no_disponibles()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Verificar si la mesa está agrupada y actualizar todas las mesas en la agrupación
+    IF EXISTS (SELECT 1 FROM Agrupacion_Mesas WHERE ID_Mesa = NEW.ID_Mesa) THEN
+        UPDATE Mesa
+        SET Disponible = FALSE
+        WHERE ID_Mesa IN (
+            SELECT ID_Mesa FROM Agrupacion_Mesas WHERE ID_Agrupacion IN (
+                SELECT ID_Agrupacion FROM Agrupacion_Mesas WHERE ID_Mesa = NEW.ID_Mesa
+            )
+        );
+    ELSE
+        -- Actualizar solo la mesa específica
+        UPDATE Mesa SET Disponible = FALSE WHERE ID_Mesa = NEW.ID_Mesa;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para cambiar el estado al abrir una cuenta
+CREATE TRIGGER trg_mesas_no_disponibles
+AFTER INSERT ON Cuenta
+FOR EACH ROW
+EXECUTE FUNCTION fn_mesas_no_disponibles();
+
+-- Función para establecer la mesa(s) como disponible
+CREATE OR REPLACE FUNCTION fn_mesas_disponibles()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Verificar si la mesa está agrupada y actualizar todas las mesas en la agrupación
+    IF EXISTS (SELECT 1 FROM Agrupacion_Mesas WHERE ID_Mesa = NEW.ID_Mesa) THEN
+        UPDATE Mesa
+        SET Disponible = TRUE
+        WHERE ID_Mesa IN (
+            SELECT ID_Mesa FROM Agrupacion_Mesas WHERE ID_Agrupacion IN (
+                SELECT ID_Agrupacion FROM Agrupacion_Mesas WHERE ID_Mesa = NEW.ID_Mesa
+            )
+        );
+    ELSE
+        -- Actualizar solo la mesa específica
+        UPDATE Mesa SET Disponible = TRUE WHERE ID_Mesa = NEW.ID_Mesa;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para cambiar el estado al cerrar una cuenta
+CREATE TRIGGER trg_mesas_disponibles
+AFTER UPDATE OF FechaHoraCierre ON Cuenta
+FOR EACH ROW
+WHEN (NEW.FechaHoraCierre IS NOT NULL)
+EXECUTE FUNCTION fn_mesas_disponibles();
+
+-- Función para actualizar la calificación promedio del mesero
+CREATE OR REPLACE FUNCTION fn_actualizar_calificacion_mesero()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Mesero SET CalificacionPromedio = (
+        SELECT AVG(Amabilidad)
+        FROM Encuesta
+        WHERE ID_Cuenta IN (
+            SELECT ID_Cuenta FROM Cuenta WHERE ID_Mesero = NEW.ID_Mesero
+        )
+    ) WHERE ID_Mesero = NEW.ID_Mesero;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para actualizar la calificación después de cada encuesta
+CREATE TRIGGER trg_actualizar_calificacion_mesero
+AFTER INSERT OR UPDATE ON Encuesta
+FOR EACH ROW
+EXECUTE FUNCTION fn_actualizar_calificacion_mesero();
