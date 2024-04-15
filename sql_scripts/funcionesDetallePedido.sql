@@ -30,15 +30,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
 -- fn_actualizar_detalle_pedido: Función para actualizar un detalle de pedido y retornar el detalle actualizado.
-CREATE OR REPLACE FUNCTION fn_actualizar_detalle_pedido(pedido_id INTEGER, item_id INTEGER, cantidad INTEGER, estado VARCHAR)
+CREATE OR REPLACE FUNCTION fn_actualizar_detalle_pedido(pedido_id INTEGER, item_id INTEGER, _cantidad INTEGER, _estado VARCHAR)
 RETURNS SETOF Detalle_Pedido AS $$
 DECLARE
     v_record Detalle_Pedido;
 BEGIN
     UPDATE Detalle_Pedido
-    SET Cantidad = cantidad, Estado = estado
+    SET Cantidad = _cantidad, Estado = _estado
     WHERE ID_Pedido = pedido_id AND ID_Item = item_id
     RETURNING * INTO v_record;
     RETURN NEXT v_record;

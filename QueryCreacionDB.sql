@@ -57,6 +57,7 @@ CREATE TABLE Item_Menu (
 
 -- Detalle_Pedido
 CREATE TABLE Detalle_Pedido (
+    ID_Detalle SERIAL PRIMARY KEY,
     ID_Pedido INTEGER NOT NULL,
     ID_Item INTEGER NOT NULL,
     Cantidad INTEGER NOT NULL,
