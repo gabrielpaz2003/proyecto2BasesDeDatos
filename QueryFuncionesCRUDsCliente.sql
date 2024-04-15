@@ -1,3 +1,4 @@
+-- CRUD CLIENTE
 -- fn_insertar_cliente: Función para insertar un nuevo cliente y retornar el cliente insertado
 CREATE OR REPLACE FUNCTION fn_insertar_cliente(nit_cliente VARCHAR, nombre_cliente VARCHAR, direccion_cliente TEXT)
 RETURNS SETOF Cliente AS $$

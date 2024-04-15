@@ -34,7 +34,7 @@ CREATE TABLE Cuenta (
     ID_Mesa INTEGER NOT NULL,
     FechaHoraApertura TIMESTAMP NOT NULL DEFAULT NOW(),
     FechaHoraCierre TIMESTAMP,
-    Estado VARCHAR(50) CHECK (Estado IN ('abierta', 'cerrada')),
+    Estado VARCHAR(50) NOT NULL CHECK (Estado IN ('abierta', 'cerrada')),
     FOREIGN KEY (ID_Mesa) REFERENCES Mesa(ID_Mesa)
 );
 

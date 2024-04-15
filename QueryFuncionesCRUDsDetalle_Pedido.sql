@@ -1,3 +1,4 @@
+-- CRUD DETALLE PEDIDO
 -- fn_insertar_detalle_pedido: Función para insertar un nuevo detalle de pedido y retornar el detalle insertado.
 CREATE OR REPLACE FUNCTION fn_insertar_detalle_pedido(pedido_id INTEGER, item_id INTEGER, cantidad_detalle INTEGER, estado_detalle VARCHAR)
 RETURNS SETOF Detalle_Pedido AS $$

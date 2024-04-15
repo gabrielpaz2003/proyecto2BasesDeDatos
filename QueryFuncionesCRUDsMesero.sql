@@ -1,3 +1,4 @@
+-- CRUD PAGO
 -- fn_insertar_mesero: Función para insertar un nuevo mesero y retornar el mesero insertado
 CREATE OR REPLACE FUNCTION fn_insertar_mesero(nombre_mesero VARCHAR, area_id_mesero INTEGER)
 RETURNS SETOF Mesero AS $$

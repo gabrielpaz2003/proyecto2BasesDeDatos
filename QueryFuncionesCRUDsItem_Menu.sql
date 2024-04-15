@@ -1,3 +1,4 @@
+-- CRUD ITEM MENU
 -- fn_insertar_item_menu: Función para insertar un nuevo ítem en el menú y retornar el ítem insertado.
 CREATE OR REPLACE FUNCTION fn_insertar_item_menu(nombre_item VARCHAR, descripcion_item TEXT, precio_item NUMERIC, tipo_item VARCHAR)
 RETURNS SETOF Item_Menu AS $$

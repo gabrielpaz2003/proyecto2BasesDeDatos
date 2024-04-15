@@ -1,3 +1,4 @@
+-- CRUD ENCUESTA
 -- fn_insertar_encuesta: Función para insertar una nueva encuesta y retornar la encuesta insertada
 CREATE OR REPLACE FUNCTION fn_insertar_encuesta(cuenta_id_encuesta INTEGER, amabilidad_encuesta INTEGER, exactitud_encuesta INTEGER)
 RETURNS SETOF Encuesta AS $$

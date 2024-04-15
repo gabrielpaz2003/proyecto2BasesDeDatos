@@ -1,3 +1,4 @@
+-- CRUD PAGO
 -- fn_insertar_pago: Función para insertar un nuevo pago y retornar el pago insertado
 CREATE OR REPLACE FUNCTION fn_insertar_pago(cuenta_id_pago INTEGER, monto_pago NUMERIC, forma_pago_pago VARCHAR)
 RETURNS SETOF Pago AS $$
