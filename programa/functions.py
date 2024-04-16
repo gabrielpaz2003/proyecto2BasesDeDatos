@@ -1,11 +1,15 @@
 from connector import callFunc, runQuery
 from entities import *
 from funcionesAuxiliares import *
-from cruds import *
+#from cruds import *
 import tabulate
 import enquiries
 import hashlib
+from datetime import datetime
 
+def convertir_a_datetime(año, mes, dia):
+    fecha = datetime(int(año), int(mes), int(dia),0,0,0,0)
+    return fecha
 
 def registerUser(username: str, password: str, rol: str) -> None:
     passwordHash = hashlib.sha256(password.encode()).hexdigest()
@@ -248,20 +252,182 @@ def mainMenu(userInstance: User) -> None:
                 reportes = ["Plato más pedido", "Horario de más pedidos", "Promedio de tiempo para comer", "Quejas por fecha", "Quejas por fecha por persona", "Eficiencia Meseros"]
                 choice = enquiries.choose('Elije una opción: ', reportes)
 
-                #TODO: Implementar qué sucede en cada if e imprimir los datos
-
                 if choice == "Plato más pedido":
-                    pass
+
+                    año_inicio = input("Ingrese el año de inicio (YYYY): ")
+                    mes_inicio = input("Ingrese el mes de inicio (MM): ")
+                    dia_inicio = input("Ingrese el día de inicio (DD): ")
+
+                    try:
+                        fecha_inicio = convertir_a_datetime(año_inicio, mes_inicio, dia_inicio)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+
+                    año_fin = input("Ingrese el año de fin (YYYY): ")
+                    mes_fin = input("Ingrese el mes de fin (MM): ")
+                    dia_fin = input("Ingrese el día de fin (DD): ")
+
+                    try:
+                        fecha_fin = convertir_a_datetime(año_fin, mes_fin, dia_fin)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+                    
+                    result = callFunc("obtener_items_menu_mas_pedidos", fecha_inicio, fecha_fin)
+            
+                    tabla = [["ID_Item", "Nombre", "Total de pedidos"]]
+
+                    for r in result:
+                        tabla.append([r[0], r[1], r[2]])
+                    
+                    print(tabulate.tabulate(tabla, headers="firstrow"))
+
                 elif choice == "Horario de más pedidos":
-                    pass
+
+                    año_inicio = input("Ingrese el año de inicio (YYYY): ")
+                    mes_inicio = input("Ingrese el mes de inicio (MM): ")
+                    dia_inicio = input("Ingrese el día de inicio (DD): ")
+
+                    try:
+                        fecha_inicio = convertir_a_datetime(año_inicio, mes_inicio, dia_inicio)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+
+                    año_fin = input("Ingrese el año de fin (YYYY): ")
+                    mes_fin = input("Ingrese el mes de fin (MM): ")
+                    dia_fin = input("Ingrese el día de fin (DD): ")
+
+                    try:
+                        fecha_fin = convertir_a_datetime(año_fin, mes_fin, dia_fin)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+                    result = callFunc("obtener_horario_mas_concurrido", fecha_inicio, fecha_fin)
+
+                    tabla = [["Horario", "Total de pedidos"]]
+                    for r in result:
+                        tabla.append([r[0], r[1]])
+
+                    print(tabulate.tabulate(tabla, headers="firstrow"))
+
                 elif choice == "Promedio de tiempo para comer":
-                    pass
+                    
+                    año_inicio = input("Ingrese el año de inicio (YYYY): ")
+                    mes_inicio = input("Ingrese el mes de inicio (MM): ")
+                    dia_inicio = input("Ingrese el día de inicio (DD): ")
+
+                    try:
+                        fecha_inicio = convertir_a_datetime(año_inicio, mes_inicio, dia_inicio)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+
+                    año_fin = input("Ingrese el año de fin (YYYY): ")
+                    mes_fin = input("Ingrese el mes de fin (MM): ")
+                    dia_fin = input("Ingrese el día de fin (DD): ")
+
+                    try:
+                        fecha_fin = convertir_a_datetime(año_fin, mes_fin, dia_fin)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+                    result = callFunc("calcular_promedio_tiempo_comida", fecha_inicio, fecha_fin)
+
+                    tabla = [["Cantidad de personas", "Promedio de tiempo"]]
+                    for r in result:
+                        tabla.append([r[0], r[1]])
+
+                    print(tabulate.tabulate(tabla, headers="firstrow"))
+
                 elif choice == "Quejas por fecha":
-                    pass
+
+                    año_inicio = input("Ingrese el año de inicio (YYYY): ")
+                    mes_inicio = input("Ingrese el mes de inicio (MM): ")
+                    dia_inicio = input("Ingrese el día de inicio (DD): ")
+
+                    try:
+                        fecha_inicio = convertir_a_datetime(año_inicio, mes_inicio, dia_inicio)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+
+                    año_fin = input("Ingrese el año de fin (YYYY): ")
+                    mes_fin = input("Ingrese el mes de fin (MM): ")
+                    dia_fin = input("Ingrese el día de fin (DD): ")
+
+                    try:
+                        fecha_fin = convertir_a_datetime(año_fin, mes_fin, dia_fin)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+                    result = callFunc("obtener_quejas_por_item_menu", fecha_inicio, fecha_fin)
+
+                    tabla = [["ID_Queja", "FechaHora", "Motivo", "Severidad", "Mesero"]]
+
+                    for r in result:
+                        tabla.append([r[0], r[1], r[2], r[3], r[4]])
+
+                    print(tabulate.tabulate(tabla, headers="firstrow"))
+
                 elif choice == "Quejas por fecha por persona":
-                    pass
+                    
+                    año_inicio = input("Ingrese el año de inicio (YYYY): ")
+                    mes_inicio = input("Ingrese el mes de inicio (MM): ")
+                    dia_inicio = input("Ingrese el día de inicio (DD): ")
+
+                    try:
+                        fecha_inicio = convertir_a_datetime(año_inicio, mes_inicio, dia_inicio)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+
+                    año_fin = input("Ingrese el año de fin (YYYY): ")
+                    mes_fin = input("Ingrese el mes de fin (MM): ")
+                    dia_fin = input("Ingrese el día de fin (DD): ")
+
+                    try:
+                        fecha_fin = convertir_a_datetime(año_fin, mes_fin, dia_fin)
+                        print("La fecha en formato datetime es:", fecha_inicio)
+                        break  # Salir del bucle si la fecha es válida
+                    except ValueError:
+                        print("La fecha ingresada no es válida. Por favor, asegúrese de ingresar valores numéricos válidos para año, mes y día.")
+
+                    result = callFunc("obtener_quejas_por_mesero", fecha_inicio, fecha_fin)
+
+                    tabla = [["ID_Queja", "FechaHora", "Motivo", "Severidad", "Item"]]
+                    for r in result:
+                        tabla.append([r[0], r[1], r[2], r[3], r[4]])
+
+                    print(tabulate.tabulate(tabla, headers="firstrow"))
+
                 elif choice == "Eficiencia Meseros":
-                    pass
+            
+                    result = callFunc("calcular_eficiencia_meseros")
+                    tabla = [["Mes", "Amabilidad", "Exactitud"]]
+                    for r in result:
+                        tabla.append([r[0], r[1], r[2]])
+
+                    print(tabulate.tabulate(tabla, headers="firstrow"))
 
             elif choice == "Cerrar sesión":
                 return
